@@ -1,7 +1,7 @@
 # cscs-bug-mpi-nvidia
 
 ## Issue
-Running multiple MPI applications on hohgant works with PrgEnv-cray, but fails with PrgEnv-nvidia and inside a container (Sarus). 
+Running multiple MPI applications on hohgant works with `PrgEnv-cray`, but fails with `PrgEnv-nvidia` and inside a container (Sarus). 
 
 ## Steps to reproduce
 ### Works with cray environment
@@ -23,7 +23,7 @@ $ srun -p amdgpu -N 1 -n 2 bash -c "./test-mpi && ./test-mpi"
 ```
 
 ### Fails with nvidia environment
-Note: run with `--mpi=pmi2`
+Note: Use `srun` with `--mpi=pmi2`
 ```bash
 $ ssh hohgant
 $ cd cscs-bug-mpi-nvidia
@@ -40,10 +40,10 @@ $ srun --mpi=pmi2 -p amdgpu -N 1 -n 2 bash -c "./test-mpi"
 # run the test app twice : fail (the first one succeeds, the second one fails)
 $ srun --mpi=pmi2 -p amdgpu -N 1 -n 2 bash -c "./test-mpi && ./test-mpi"
 ```
-The first run succeeds, the second one fails.
+The first run of `./test-mpi` succeeds, the second one fails.
 
 ### Fails inside a container (Sarus)
-Note: run with `--mpi`
+Note: Use `srun` with `--mpi=pmi2` and `sarus` with `--mpi`
 ```bash
 $ ssh hohgant
 $ cd cscs-bug-mpi-nvidia
@@ -56,8 +56,8 @@ $ srun -N 1 -n 1 --mpi=pmi2 -p amdgpu sarus run --mpi --mount=type=bind,source=$
 $ srun -N 1 -n 2 --mpi=pmi2 -p amdgpu sarus run --mpi --mount=type=bind,source=$HOME,destination=$HOME quay.io/madeeks/osu-mb:6.2-mpich4.1-ubuntu22.04 bash -c "cd ~/cscs-bug-mpi-nvidia && ./test-mpi"
 $ srun -N 1 -n 2 --mpi=pmi2 -p amdgpu sarus run --mpi --mount=type=bind,source=$HOME,destination=$HOME quay.io/madeeks/osu-mb:6.2-mpich4.1-ubuntu22.04 bash -c "cd ~/cscs-bug-mpi-nvidia && ./test-mpi && ./test-mpi"
 ```
-Again, the first run succeeds, the second one fails, as with the nvidia environment.
-This is likely because Sarus replaces the MPI library in the container with the one from the nvidia environment. It is done in the MPI hook.
+Again, the first run of `./test-mpi` succeeds, the second one fails, as with the nvidia environment.
+This is likely because Sarus replaces the MPI library in the container with the one from the nvidia environment. Sarus does this in the MPI hook.
 ```bash
 $ cat /opt/sarus/1.6.0/etc/hooks.d/070-mpi-hook.json
 ...
@@ -69,4 +69,4 @@ lrwxrwxrwx 1 root root 42 Sep 19 16:15 /opt/sarus/1.6.0/mpi_links/libmpifort.so.
 ```
 
 ## Conclusion
-It seems we can blame the nvidia MPI library (libmpi_nvidia.so.12), as we can see the same problem with different compilers (`cc` wrapper on the node and `mpicc` in a container).
+It seems we can blame the nvidia MPI library (libmpi_nvidia.so.12), as we can see the same problem with this library even when using different compilers (`cc` wrapper on the node and `mpicc` in a container).
