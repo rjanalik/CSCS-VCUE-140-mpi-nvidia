@@ -23,6 +23,8 @@ $ ldd test-mpi
 ...
 	libmpi_cray.so.12 => /opt/cray/pe/lib64/libmpi_cray.so.12 (0x00001543fb2cf000)
 ...
+$ ls -l /opt/cray/pe/lib64/libmpi_nvidia.so.12
+lrwxrwxrwx 1 root root 65 Oct 27  2022 /opt/cray/pe/lib64/libmpi_nvidia.so.12 -> /opt/cray/pe/mpich/8.1.21/ofi/nvidia/20.7/lib/libmpi_nvidia.so.12
 # run the test app once : OK
 $ srun -p amdgpu -N 1 -n 2 bash -c "./test-mpi"
 # run the test app twice : OK
@@ -42,6 +44,8 @@ $ ldd test-mpi
 ...
 	libmpi_nvidia.so.12 => /opt/cray/pe/lib64/libmpi_nvidia.so.12 (0x000014d6ddfab000)
 ...
+$ ls -l /opt/cray/pe/lib64/libmpi_cray.so.12
+lrwxrwxrwx 1 root root 61 Oct 27  2022 /opt/cray/pe/lib64/libmpi_cray.so.12 -> /opt/cray/pe/mpich/8.1.21/ofi/cray/10.0/lib/libmpi_cray.so.12
 # run the test app once : OK
 $ srun --mpi=pmi2 -p amdgpu -N 1 -n 2 bash -c "./test-mpi"
 # run the test app twice : fail (the first one succeeds, the second one fails)
