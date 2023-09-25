@@ -17,7 +17,7 @@ $ ssh hohgant
 $ cd cscs-bug-mpi-nvidia
 # Load cray environment
 $ . setup-cray.sh
-$ make -B
+$ cc test-mpi.c -o test-mpi
 # Check the MPI library
 $ ldd test-mpi
 ...
@@ -38,7 +38,7 @@ $ ssh hohgant
 $ cd cscs-bug-mpi-nvidia
 # Load nvidia environment
 $ . setup-nvidia.sh
-$ make -B
+$ cc test-mpi.c -o test-mpi
 # Check the MPI library
 $ ldd test-mpi
 ...
@@ -60,7 +60,7 @@ $ ssh hohgant
 $ cd cscs-bug-mpi-nvidia
 # Do not load any environment, Sarus does not use it
 # compile the test app inside a container
-$ srun -N 1 -n 1 --mpi=pmi2 -p amdgpu sarus run --mpi --mount=type=bind,source=$HOME,destination=$HOME quay.io/madeeks/osu-mb:6.2-mpich4.1-ubuntu22.04 bash -c "cd ~/cscs-bug-mpi-nvidia && make -B CC=mpicc && ldd ./test-mpi"
+$ srun -N 1 -n 1 --mpi=pmi2 -p amdgpu sarus run --mpi --mount=type=bind,source=$HOME,destination=$HOME quay.io/madeeks/osu-mb:6.2-mpich4.1-ubuntu22.04 bash -c "cd ~/cscs-bug-mpi-nvidia && mpicc test-mpi.c -o test-mpi && ldd ./test-mpi"
 ...
 	libmpi.so.12 => /usr/lib/libmpi.so.12 (0x00007f70bb01b000)
 ...
